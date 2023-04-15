@@ -64,6 +64,11 @@ async function sendOneTweet() {
   
   let draftTweet = await fetchFirstDraftTweet();
 
+  if(!draftTweet){
+    console.log('No draft tweet found')
+    return false
+  }
+
   //send post request to local API route
   axios
     .post(`http://localhost:${PORT}/callback`, {
@@ -73,7 +78,7 @@ async function sendOneTweet() {
     })
     .then((res) => {
       //handle success
-      console.log(res);
+      console.log(res.data);
       if (res.data.item.id) {
         updateTweetPublished(res.data.item.id);
       }
@@ -157,6 +162,15 @@ function removeChars(str) {
   }
   return str;
 }
+
+
+
+app.get('/load', (req,res)=>{
+  readLocalTweets
+  res.json({
+    result:"Tweets will be loaded into db",
+  })
+})
 
 app.get('/send', (req,res)=>{
   sendOneTweet();
