@@ -50,15 +50,13 @@ let tweets = [];
 const cron = require("node-cron");
 const { groupCollapsed } = require("console");
 
+cron.schedule(process.env.cron_tweets_load||"* * */1 * *", () => {
+  readLocalTweets();
+});
 
-
-//cron.schedule("*/1 * * * *", () => {
-  //readLocalTweets();
-//});
-
-//cron.schedule("*/1 * * * *", () => {
-//  sendOneTweet();
-//});
+cron.schedule(process.env.cron_tweet_send||"* */2 * * *", () => {
+  sendOneTweet();
+});
 
 async function sendOneTweet() {
   const axios = require("axios");
@@ -179,8 +177,6 @@ app.post("/callback", (req, res) => {
 createTable().then(() => {
   app.listen(PORT, () => {
     console.log("Server is running on port 3000");
-    readLocalTweets()
-    sendOneTweet();
   });
 });
 
