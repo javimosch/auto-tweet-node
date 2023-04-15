@@ -50,19 +50,18 @@ let tweets = [];
 const cron = require("node-cron");
 const { groupCollapsed } = require("console");
 
-cron.schedule(process.env.cron_tweets_load||"* * */1 * *", () => {
+cron.schedule(process.env.cron_tweets_load||"0 0 * * *", () => {
   readLocalTweets();
 });
 
-cron.schedule(process.env.cron_tweet_send||"* */2 * * *", () => {
+cron.schedule(process.env.cron_tweet_send||"0 */2 * * *", () => {
   sendOneTweet();
 });
 
 async function sendOneTweet() {
   const axios = require("axios");
 
-  insertTweet;
-
+  
   let draftTweet = await fetchFirstDraftTweet();
 
   //send post request to local API route
@@ -141,7 +140,11 @@ async function saveTweets(arr) {
 
   for (let i = 0; i < arr.length; i++) {
     try {
-      await insertTweet(arr[i]);
+      try{
+        await insertTweet(arr[i]);
+      }catch(err){
+        console.log('Error inserting tweet in db')
+      }
     } catch (err) {
       console.error(err);
     }
@@ -161,15 +164,30 @@ app.post("/callback", (req, res) => {
   console.log({
     body: JSON.stringify(req.body),
   });
-
+  let send = false
   tweet(item)
     .catch((err) => {
       console.error({
+        itemCode: item.code,
+        route:'/callback',
         err,
       });
+      if(send){
+        return
+      }
+      send=true
       res.json({ item: null, err: "Tweet failed" });
     })
     .then(() => {
+      console.log({
+        itemCode: item.code,
+        route:'/callback',
+        result:'success'
+      })
+      if(send){
+        return
+      }
+      send=true
       res.json({ item });
     });
 });
