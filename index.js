@@ -4,7 +4,7 @@ require("dotenv").config({});
 const app = express();
 const btoa = require("btoa");
 const sqlite = require("sqlite3").verbose();
-const PORT = process.env.POR||3000
+const PORT = process.env.PORT||3000
 let db = new sqlite.Database("./local.db", (err) => {
   if (err) {
     console.error(err.message);
@@ -157,6 +157,13 @@ function removeChars(str) {
   }
   return str;
 }
+
+app.get('/send', (req,res)=>{
+  sendOneTweet();
+  res.json({
+    result:"Tweet queued",
+  })
+})
 
 app.post("/callback", (req, res) => {
   const { item } = req.body;
