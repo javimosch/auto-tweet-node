@@ -79,7 +79,7 @@ async function sendOneTweet() {
     .then((res) => {
       //handle success
       console.log(res.data);
-      if (res.data.item.id) {
+      if (res.data.item?.id) {
         updateTweetPublished(res.data.item.id);
       }
     })
@@ -279,6 +279,19 @@ async function closeDb() {
       resolve();
     });
   });
+}
+
+async function getTextFromApi() {
+  const data = {
+    model: "text-davinci-003",
+    prompt:"Summarize thext into t",
+    max_tokens,
+    temperature,
+  };
+  let response = await axios
+    .post("https://api.openai.com/v1/completions", data, { headers })
+    let text = response.data.choices[0].text
+  return text;
 }
 
 process.on("exit", function (code) {

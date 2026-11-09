@@ -3,3 +3,4 @@ api_key_secret=
 access_token=
 access_token_secret=
 tweets_file_path=
+OPENAI_API_KEY=
